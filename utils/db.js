@@ -8,6 +8,7 @@ class DBClient {
     this.isConnected = false;
     this.client = new MongoClient(`mongodb://${host}:${port}/${database}`);
     this.client.connect().then(() => {
+      console.log("PWOOP")
         this.isConnected = true;
     }).catch((error) => {
         this.isConnected = false;
@@ -16,7 +17,7 @@ class DBClient {
 }
 
   isAlive() {
-    return this.client.isConnected;
+    return this.isConnected;
   }
 
   async nbUsers() {
