@@ -18,10 +18,10 @@ class AuthController {
         console.log(key);
         const reply = await redisClient.set(key, user._id, 86400);
         console.log(reply);
-        response.status(200).json({ token });
+        response.status(200).json({ token }).end();
       }
     } else {
-      response.status(401).json({ error: 'Unauthorized' });
+      response.status(401).json({ error: 'Unauthorized' }).end();
     }
   }
 
@@ -32,11 +32,11 @@ class AuthController {
     const user = await dbClient.fetchUserByID(userID);
 
     if (!user) {
-      response.status(401).json({ error: 'Unauthorized' });
+      response.status(401).json({ error: 'Unauthorized' }).end();
     } else {
       const reply = await redisClient.del(key);
       console.log(reply);
-      response.status(204).json();
+      response.status(204).json().end();
     }
   }
 
@@ -47,12 +47,12 @@ class AuthController {
     const user = await dbClient.fetchUserByID(userID);
 
     if (!user) {
-      response.status(401).json({ error: 'Unauthorized' });
+      response.status(401).json({ error: 'Unauthorized' }).end();
     } else {
       response.status(200).json({
         id: user._id,
         email: user.email,
-      });
+      }).end();
     }
   }
 }
