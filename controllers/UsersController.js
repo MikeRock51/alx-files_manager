@@ -2,28 +2,27 @@ import crypto from 'crypto';
 import dbClient from '../utils/db';
 
 class UsersController {
-  static postNew(request, response) {
+  static async postNew(request, response) {
     const { email, password } = request.body;
     const sha1 = crypto.createHash('sha1');
 
     if (!email) {
-      response.status(400).send('Missing email');
-    }
-    if (!password) {
-      response.status(400).send('Missing password');
-    }
-    if (dbClient.fetchUserByEmail(email)) {
-      response.status(400).send('Already exists');
-    }
-    sha1.update(password);
-    const hashedPassword = sha1.digest('hex');
+      response.status(400).json({ error: 'Missing email' }).end();
+    } else if (!password) {
+      response.status(400).json({ error: 'Missing password' }).end();
+    } else if (await dbClient.fetchUserByEmail({ email }) !== null) {
+      response.status(400).json({ error: 'Already exists' }).end();
+    } else {
+      sha1.update(password);
+      const hashedPassword = sha1.digest('hex');
 
-    const userID = dbClient.createUser({
-      email,
-      password: hashedPassword,
-    });
+      const userID = await dbClient.createUser({
+        email,
+        password: hashedPassword,
+      });
 
-    response.status(200).send({ id: userID, email });
+      response.status(200).json({ id: userID, email }).end();
+    }
   }
 }
 

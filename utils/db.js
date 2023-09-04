@@ -58,7 +58,7 @@ class DBClient {
   async createUser(user) {
     const collection = this.client.db().collection('users');
     const response = await collection.insertOne(user);
-    return response.insertedId.toString;
+    return response.insertedId.toString();
   }
 }
 
