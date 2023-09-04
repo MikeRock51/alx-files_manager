@@ -52,7 +52,7 @@ class DBClient {
 
   async fetchUserByEmail(email) {
     const collection = this.client.db().collection('users');
-    const response = await collection.findOne({ email });
+    const response = await collection.findOne(email);
     return response;
   }
 
