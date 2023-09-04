@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { MongoClient } from 'mongodb';
+import { MongoClient, ServerApiVersion } from 'mongodb';
 
 class DBClient {
   constructor() {
@@ -9,7 +9,17 @@ class DBClient {
       ? process.env.DB_DATABASE
       : 'files_manager';
     this.isConnected = false;
-    this.client = new MongoClient(`mongodb://${host}:${port}/${database}`);
+    // this.client = new MongoClient(`mongodb://${host}:${port}/${database}`);
+    const password = process.env.DB_PASSWORD;
+    const uri = `mongodb+srv://MikeRock:${password}@mikerockmongo.v3sevrb.mongodb.net/?retryWrites=true&w=majority/${database}`;
+    this.client = new MongoClient(uri, {
+      serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+      },
+    });
+
     this.client
       .connect()
       .then(() => {
