@@ -19,6 +19,8 @@ class AuthController {
         const reply = await redisClient.set(key, user._id, 86400);
         console.log(reply);
         response.status(200).json({ token }).end();
+      } else {
+        response.status(401).json({ error: 'Unauthorized' }).end();
       }
     } else {
       response.status(401).json({ error: 'Unauthorized' }).end();
@@ -30,7 +32,7 @@ class AuthController {
     const key = `auth_${token}`;
     const userID = await redisClient.get(key);
     if (!userID) {
-      response.status(400).json({ error: 'Unauthorized' }).end();
+      response.status(401).json({ error: 'Unauthorized' }).end();
     } else {
       const user = await dbClient.fetchUserByID(userID);
 
@@ -49,7 +51,7 @@ class AuthController {
     const key = `auth_${token}`;
     const userID = await redisClient.get(key);
     if (!userID) {
-      response.status(400).json({ error: 'Unauthorized' }).end();
+      response.status(401).json({ error: 'Unauthorized' }).end();
     } else {
       const user = await dbClient.fetchUserByID(userID);
 
