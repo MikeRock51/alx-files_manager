@@ -11,7 +11,7 @@ class UsersController {
     } else if (!password) {
       response.status(400).json({ error: 'Missing password' }).end();
     } else if (await dbClient.fetchUserByEmail({ email }) !== null) {
-      response.status(400).json({ error: 'Already exists' }).end();
+      response.status(400).json({ error: 'Already exist' }).end();
     } else {
       sha1.update(password);
       const hashedPassword = sha1.digest('hex');
