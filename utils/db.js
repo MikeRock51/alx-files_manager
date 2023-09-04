@@ -11,7 +11,7 @@ class DBClient {
     this.isConnected = false;
     // this.client = new MongoClient(`mongodb://${host}:${port}/${database}`);
     const password = process.env.DB_PASSWORD;
-    const uri = `mongodb+srv://MikeRock:${password}@mikerockmongo.v3sevrb.mongodb.net/?retryWrites=true&w=majority/${database}`;
+    const uri = `mongodb+srv://MikeRock:${password}@mikerockmongo.v3sevrb.mongodb.net/${database}?retryWrites=true&w=majority`;
     this.client = new MongoClient(uri, {
       serverApi: {
         version: ServerApiVersion.v1,
@@ -47,6 +47,18 @@ class DBClient {
     const collection = db.collection('files');
     const fileNb = await collection.countDocuments();
     return fileNb;
+  }
+
+  async fetchUserByEmail(email) {
+    const collection = this.client.db().collection('users');
+    const response = await collection.findOne({ email });
+    return response;
+  }
+
+  async createUser(user) {
+    const collection = this.client.db().collection('users');
+    const response = await collection.insertOne(user);
+    return response.insertedId.toString;
   }
 }
 
