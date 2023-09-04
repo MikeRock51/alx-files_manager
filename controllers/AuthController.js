@@ -29,6 +29,7 @@ class AuthController {
     const token = request.headers['x-token'];
     const key = `auth_${token}`;
     const userID = await redisClient.get(key);
+    if (!userID) response.status(400).json({ error: 'Unauthorized' }).end();
     const user = await dbClient.fetchUserByID(userID);
 
     if (!user) {
@@ -44,6 +45,7 @@ class AuthController {
     const token = request.headers['x-token'];
     const key = `auth_${token}`;
     const userID = await redisClient.get(key);
+    if (!userID) response.status(400).json({ error: 'Unauthorized' }).end();
     const user = await dbClient.fetchUserByID(userID);
 
     if (!user) {
