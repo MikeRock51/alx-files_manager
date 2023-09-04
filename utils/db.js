@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { MongoClient, ServerApiVersion } from 'mongodb';
-// import { MongoClient } from 'mongodb';
+// import { MongoClient, ServerApiVersion, ObjectId } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 
 class DBClient {
   constructor() {
@@ -10,16 +10,16 @@ class DBClient {
       ? process.env.DB_DATABASE
       : 'files_manager';
     this.isConnected = false;
-    // this.client = new MongoClient(`mongodb://${host}:${port}/${database}`);
-    const password = process.env.DB_PASSWORD;
-    const uri = `mongodb+srv://MikeRock:${password}@mikerockmongo.v3sevrb.mongodb.net/${database}?retryWrites=true&w=majority`;
-    this.client = new MongoClient(uri, {
-      serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-      },
-    });
+    this.client = new MongoClient(`mongodb://${host}:${port}/${database}`);
+    // const password = process.env.DB_PASSWORD;
+    // const uri = `mongodb+srv://MikeRock:${password}@mikerockmongo.v3sevrb.mongodb.net/${database}?retryWrites=true&w=majority`;
+    // this.client = new MongoClient(uri, {
+    //   serverApi: {
+    //     version: ServerApiVersion.v1,
+    //     strict: true,
+    //     deprecationErrors: true,
+    //   },
+    // });
 
     this.client
       .connect()
@@ -60,6 +60,12 @@ class DBClient {
     const collection = this.client.db().collection('users');
     const response = await collection.insertOne(user);
     return response.insertedId.toString();
+  }
+
+  async fetchUserByID(userID) {
+    const collection = this.client.db().collection('users');
+    const user = await collection.findOne({ _id: new ObjectId(userID) });
+    return user;
   }
 }
 

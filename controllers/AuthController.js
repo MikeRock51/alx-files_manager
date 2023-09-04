@@ -16,12 +16,27 @@ class AuthController {
         const token = uuidv4();
         const key = `auth_${token}`;
         console.log(key);
-        const reply = await redisClient.set(key, token, 86400);
+        const reply = await redisClient.set(key, user._id, 86400);
         console.log(reply);
         response.status(200).json({ token });
       }
     } else {
       response.status(401).send('Unauthorized');
+    }
+  }
+
+  static async getDisconnect(request, response) {
+    const token = request.headers['x-token'];
+    const key = `auth_${token}`;
+    const userID = await redisClient.get(key);
+    const user = await dbClient.fetchUserByID(userID);
+
+    if (!user) {
+      response.status(401).send('unauthorized');
+    } else {
+      const reply = await redisClient.del(key);
+      console.log(reply);
+      response.status(204).send('');
     }
   }
 }
