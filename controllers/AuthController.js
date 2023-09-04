@@ -36,7 +36,7 @@ class AuthController {
     } else {
       const reply = await redisClient.del(key);
       console.log(reply);
-      response.status(204).send('');
+      response.status(204).json();
     }
   }
 
