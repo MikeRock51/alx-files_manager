@@ -21,7 +21,7 @@ class UsersController {
         password: hashedPassword,
       });
 
-      response.status(200).json({ id: userID, email }).end();
+      response.status(201).json({ id: userID, email }).end();
     }
   }
 }
