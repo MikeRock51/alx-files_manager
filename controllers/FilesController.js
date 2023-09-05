@@ -56,7 +56,6 @@ class FilesController {
     const filePath = process.env.FOLDER_PATH || '/tmp/files_manager/';
     fileData = {
       ...fileData,
-      data: fileInfo.data,
       localPath: `${filePath}/${fileName}`,
     };
 
