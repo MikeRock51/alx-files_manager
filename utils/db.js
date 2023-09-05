@@ -75,9 +75,10 @@ class DBClient {
     return file;
   }
 
-  async updateField(field, value, table) {
+  async createFile(fileInfo) {
     const collection = this.client.db().collection(table);
-    const response = await collection
+    const file = await collection.insertOne(fileInfo);
+    return file;
   }
 }
 

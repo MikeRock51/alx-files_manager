@@ -1,5 +1,6 @@
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
+import { v4 as uuidv4 } from 'uuid';
 
 class FilesController {
   static async postUpload(request, response) {
@@ -31,16 +32,20 @@ class FilesController {
         }
       }
       if (fileInfo.type === 'folder') {
-        // If the type is folder, add the new file document in the DB and return the new file with a status code 201
+        fileInfo.userId = userID;
+        const newFile = await dbClient.createFile(fileInfo);
+        return response.status(201).json(newFile);
       }
+      const fileName = uuidv4();
       const fileData = {
-        filename: fileInfo.name,
+        name: fileInfo.name,
         type: fileInfo.type,
         parentId: fileInfo.parentId || 0,
         isPublic: fileInfo.isPublic || false,
         data: fileInfo.data,
         userId: userID,
-      }
+        localPath: process.env.FOLDER_PATH || '/tmp/files_manager',
+      };
     }
   }
 }
