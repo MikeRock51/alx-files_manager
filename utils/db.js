@@ -71,14 +71,14 @@ class DBClient {
 
   async fetchFileByParentID(parentId) {
     const collection = this.client.db().collection('files');
-    const file = await collection.findOne({ parentId });
+    const file = await collection.findOne({ _id: new ObjectId(parentId) });
     return file;
   }
 
   async createFile(fileInfo) {
-    const collection = this.client.db().collection(table);
+    const collection = this.client.db().collection('files');
     const file = await collection.insertOne(fileInfo);
-    return file;
+    return file.insertedId;
   }
 }
 
