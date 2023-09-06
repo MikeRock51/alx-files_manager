@@ -73,6 +73,24 @@ class FilesController {
       parentId: fileData.parentId,
     });
   }
+
+  static async getShow(request, response) {
+    const { id } = request.params;
+    const token = request.headers['x-token'];
+    const userID = redisClient.get(`auth_${token}`);
+    const user = await dbClient.fetchUserByID(userID);
+
+    if (!user) {
+      return response.status(401).json({ error: 'Unauthorized' });
+    }
+    const file = await dbClient.fetchFileByID(new ObjectId(id));
+
+    if (!file || file._id !== userID) {
+      return response.status(404).json({ error: 'Not found' });
+    }
+
+    return response.status(200).json(file);
+  }
 }
 
 export default FilesController;
