@@ -86,6 +86,17 @@ class DBClient {
     const file = await collection.findOne({ _id: fileID });
     return file;
   }
+
+  async fetchPagedFilesByParentID(parentId, page) {
+    const collection = this.client.db().collection('files');
+    const pipeline = [
+      { $match: { parentId } },
+      { $skip: page },
+      { $limit: 20 },
+    ];
+    const files = await collection.aggregate(pipeline).toArray();
+    return files;
+  }
 }
 
 const dbClient = new DBClient();

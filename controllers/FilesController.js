@@ -98,6 +98,21 @@ class FilesController {
       parentId: file.parentId,
     });
   }
+
+  static async getIndex(request, response) {
+    const token = request.headers['x-token'];
+    const userID = await redisClient.get(`auth_${token}`);
+
+    if (!userID) return response.status(401).json({ error: 'Unauthorized' });
+    const user = await dbClient.fetchUserByID(userID);
+    if (!user) return response.status(401).json({ error: 'Unauthorized' });
+
+    const parentId = (request.query.parentId && new ObjectId(request.query.parentId)) || 0;
+    const page = request.query.page || 0;
+    const files = await dbClient.fetchPagedFilesByParentID(parentId, page);
+
+    return response.status(200).json(files);
+  }
 }
 
 export default FilesController;
