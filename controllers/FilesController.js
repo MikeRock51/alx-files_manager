@@ -53,7 +53,7 @@ class FilesController {
       });
     }
     const fileName = uuidv4();
-    const filePath = process.env.FOLDER_PATH || '/tmp/files_manager/';
+    const filePath = process.env.FOLDER_PATH || '/tmp/files_manager';
     fileData = {
       ...fileData,
       localPath: `${filePath}/${fileName}`,
@@ -77,7 +77,7 @@ class FilesController {
   static async getShow(request, response) {
     const { id } = request.params;
     const token = request.headers['x-token'];
-    const userID = redisClient.get(`auth_${token}`);
+    const userID = await redisClient.get(`auth_${token}`);
     const user = await dbClient.fetchUserByID(userID);
 
     if (!user) {
@@ -85,11 +85,18 @@ class FilesController {
     }
     const file = await dbClient.fetchFileByID(new ObjectId(id));
 
-    if (!file || file._id !== userID) {
+    if (!file || file.userId.toString() !== user._id.toString()) {
       return response.status(404).json({ error: 'Not found' });
     }
 
-    return response.status(200).json(file);
+    return response.status(200).json({
+      id: file._id.toString(),
+      userId: userID,
+      name: file.name,
+      type: file.type,
+      isPublic: file.isPublic,
+      parentId: file.parentId,
+    });
   }
 }
 
