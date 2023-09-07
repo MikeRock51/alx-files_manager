@@ -111,7 +111,16 @@ class FilesController {
     const page = request.query.page || 0;
     const files = await dbClient.fetchPagedFilesByParentID(parentId, page);
 
-    return response.status(200).json(files);
+    return response.status(200).json(
+      files.map((file) => ({
+        id: file._id.toString(),
+        userId: userID,
+        name: file.name,
+        type: file.type,
+        isPublic: file.isPublic,
+        parentId: file.parentId,
+      })),
+    );
   }
 }
 
