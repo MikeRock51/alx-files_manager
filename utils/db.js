@@ -10,6 +10,8 @@ class DBClient {
       ? process.env.DB_DATABASE
       : 'files_manager';
     this.isConnected = false;
+    this.filesCollection = null;
+    this.usersCollection = null;
     this.client = new MongoClient(`mongodb://${host}:${port}/${database}`);
     // const password = process.env.DB_PASSWORD;
     // console.log(password);
@@ -26,6 +28,8 @@ class DBClient {
       .connect()
       .then(() => {
         this.isConnected = true;
+        this.filesCollection = this.client.db().collection('files');
+        this.usersCollection = this.client.db().collection('users');
       })
       .catch((error) => {
         this.isConnected = false;
@@ -38,64 +42,58 @@ class DBClient {
   }
 
   async nbUsers() {
-    const db = this.client.db();
-    const collection = db.collection('users');
-    const userNb = await collection.countDocuments();
+    const userNb = await this.usersCollection.countDocuments();
     return userNb;
   }
 
   async nbFiles() {
-    const db = this.client.db();
-    const collection = db.collection('files');
-    const fileNb = await collection.countDocuments();
+    const fileNb = await this.usersCollection.countDocuments();
     return fileNb;
   }
 
   async fetchUserByEmail(email) {
-    const collection = this.client.db().collection('users');
-    const response = await collection.findOne(email);
+    const response = await this.usersCollection.findOne(email);
     return response;
   }
 
   async createUser(user) {
-    const collection = this.client.db().collection('users');
-    const response = await collection.insertOne(user);
+    const response = await this.usersCollection.insertOne(user);
     return response.insertedId.toString();
   }
 
   async fetchUserByID(userID) {
-    const collection = this.client.db().collection('users');
-    const user = await collection.findOne({ _id: new ObjectId(userID) });
+    const user = await this.usersCollection.findOne({ _id: new ObjectId(userID) });
     return user;
   }
 
   async fetchFileByParentID(parentId) {
-    const collection = this.client.db().collection('files');
-    const file = await collection.findOne({ _id: new ObjectId(parentId) });
+    const file = await this.filesCollection.findOne({ _id: new ObjectId(parentId) });
     return file;
   }
 
   async createFile(fileInfo) {
-    const collection = this.client.db().collection('files');
-    const file = await collection.insertOne(fileInfo);
+    const file = await this.filesCollection.insertOne(fileInfo);
     return file.insertedId;
   }
 
   async fetchFileByID(fileID) {
-    const collection = this.client.db().collection('files');
-    const file = await collection.findOne({ _id: fileID });
+    const file = await this.filesCollection.findOne({ _id: fileID });
     return file;
   }
 
   async fetchPagedFilesByParentID(parentId, page) {
-    const collection = this.client.db().collection('files');
     const pipeline = [
       { $match: { parentId } },
       { $skip: page },
       { $limit: 20 },
     ];
-    const files = await collection.aggregate(pipeline).toArray();
+    const files = await this.filesCollection.aggregate(pipeline).toArray();
     return files;
+  }
+
+  async updateFile(filter, update) {
+    const response = await this.filesCollection.updateOne(filter, update);
+    return response;
   }
 }
 
