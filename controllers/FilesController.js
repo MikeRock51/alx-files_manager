@@ -177,6 +177,10 @@ class FilesController {
       parentId: file.parentId,
     });
   }
+
+  static async getFile(request, response) {
+    return response.status(200).json({});
+  }
 }
 
 export default FilesController;
