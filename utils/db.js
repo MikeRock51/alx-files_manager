@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-// import { MongoClient, ServerApiVersion, ObjectId } from 'mongodb';
-import { MongoClient, ObjectId } from 'mongodb';
+import { MongoClient, ServerApiVersion, ObjectId } from 'mongodb';
+// import { MongoClient, ObjectId } from 'mongodb';
 
 class DBClient {
   constructor() {
@@ -12,17 +12,17 @@ class DBClient {
     this.isConnected = false;
     this.filesCollection = null;
     this.usersCollection = null;
-    this.client = new MongoClient(`mongodb://${host}:${port}/${database}`);
-    // const password = process.env.DB_PASSWORD;
-    // console.log(password);
-    // const uri = `mongodb+srv://MikeRock:${password}@mikerockmongo.v3sevrb.mongodb.net/${database}?retryWrites=true&w=majority`;
-    // this.client = new MongoClient(uri, {
-    //   serverApi: {
-    //     version: ServerApiVersion.v1,
-    //     strict: true,
-    //     deprecationErrors: true,
-    //   },
-    // });
+    // this.client = new MongoClient(`mongodb://${host}:${port}/${database}`);
+    const password = process.env.DB_PASSWORD;
+    console.log(password);
+    const uri = `mongodb+srv://MikeRock:${password}@mikerockmongo.v3sevrb.mongodb.net/${database}?retryWrites=true&w=majority`;
+    this.client = new MongoClient(uri, {
+      serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+      },
+    });
 
     this.client
       .connect()
